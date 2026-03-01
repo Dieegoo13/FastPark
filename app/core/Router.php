@@ -27,8 +27,11 @@ class Router
 
             '/fechamento/fechar/:id' => [
                 'HomeController@fechar',
-            ]
+            ],
 
+            '/gerartickets' => [
+                'HomeController@gerarTicket',
+            ],
 
 
 

@@ -1,4 +1,13 @@
 <!-- CONTENT -->
+<?php if (!empty($mensagens)): ?>
+    <?php foreach ($mensagens as $msg): ?>
+        <div class="alert alert-<?= $msg['type'] ?> alert-dismissible fade show fw-bold  text-center  text-<?= $msg['type'] ?>" role="alert">
+            <?= $msg['text'] ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
+
 <div id="content">
     <div class="section-title">Tickets em Aberto</div>
 
