@@ -7,6 +7,14 @@ class HomeController extends Action
     {
         $tickets = $this->ticketModel->getAll();
 
+        foreach ($tickets as &$ticket) {
+            $ticket['permanencia'] =
+                $this->ticketModel->calcularPermanencia(
+                    $ticket['entrada'],
+                    $ticket['data_saida'] ?? null
+                );
+        }
+
         $this->view('home', true, [
             'titulo' => 'FastPark - Home',
             'tickets' => $tickets,

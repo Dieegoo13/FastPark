@@ -44,6 +44,26 @@ class Tickets
         return (int) ($result['total'] ?? 0);
     }
 
+    public function calcularPermanencia($entrada, $saida = null)
+    {
+
+        $dataEntrada = new DateTime($entrada);
+
+
+        $dataSaida = $saida
+            ? new DateTime($saida)
+            : new DateTime();
+
+
+        $intervalo = $dataEntrada->diff($dataSaida);
+
+        $minutos = ($intervalo->days * 24 * 60)
+            + ($intervalo->h * 60)
+            + $intervalo->i;
+
+        return $minutos;
+    }
+
 }
 
 

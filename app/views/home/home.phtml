@@ -18,17 +18,91 @@
                     <tr>
                         <td><span class="badge-entrada"><?= $ticket['id'] ?></span></td>
 
-                        <td><span class="badge-time"><?= $ticket['entrada'] ?></span></td>
+                        <td><span class="badge-time"><?= (new DateTime($ticket['entrada']))->format('d/m/Y H:i') ?></span></td>
 
-                        <td><span class="badge-time"><?= $ticket['entrada'] ?></span></td>
+                        <td><span class="badge-time"><?= $ticket['permanencia'] ?> Minutos</span></td>
 
                         <td><span class="badge-valor">R$ <?= number_format($ticket['valor'], 2, ',', '.') ?></span></td>
 
-                        <td><button class="btn btn-danger "> Fechar</button></td>
+                        <td>
+                            <button
+                                class="btn btn-danger btn-fechar"
+                                data-id="<?= $ticket['id'] ?>"
+                                data-entrada="<?= $ticket['entrada'] ?>"
+                                data-saida="<?= $ticket['saida'] ?>"
+                                data-valor="<?= $ticket['valor'] ?>">
+                                Fechar
+                            </button>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
 
+
+    <div class="modal fade" id="modalFechamento">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+
+                <!-- HEADER -->
+                <div class="modal-header text-white border-0" style="background: var(--sidebar);">
+                    <h5 class="modal-title fw-bold text-center">
+                        Fechar Ticket
+                    </h5>
+
+                    <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <!-- BODY -->
+                <div class="modal-body text-center py-4">
+
+                    <p class="mb-2">
+                        <strong>Ticket:</strong>
+                        <span id="m-ticket"></span>
+                    </p>
+
+                    <p class="mb-2">
+                        <strong>Entrada:</strong>
+                        <span id="m-entrada"></span>
+                    </p>
+
+                    <p class="mb-2">
+                        <strong>Saída:</strong>
+                        <span id="m-saida"></span>
+                    </p>
+
+                    <p class="mb-3">
+                        <strong>Tempo total:</strong>
+                        <span id="m-tempo"></span> minutos
+                    </p>
+
+                    <hr>
+
+                    <p class="text-danger fw-bold fs-4 mb-0">
+                        Valor a pagar: R$ <span id="m-valor"></span>
+                    </p>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="modal-footer border-0 px-4 pb-4 d-flex gap-2">
+                    <button class="btn btn-outline-danger flex-fill"
+                        data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <a id="m-confirmar"
+                        href="#"
+                        class="btn btn-success flex-fill">
+                        Confirmar
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>

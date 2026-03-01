@@ -5,7 +5,7 @@ class FechamentoController extends Action
     public function index()
     {
         $this->view('fechamento', true, [
-            'titulo' => 'FastPark - Fechamento',
+            'titulo' => 'FastPark - Fechados',
         ]);
     }
 

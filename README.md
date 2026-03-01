@@ -62,7 +62,9 @@ O sistema calcula automaticamente o valor do estacionamento com base no tempo de
 </div>
 
 <div>
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/bootstrap/bootstrap.svg" width="30px" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/bootstrap/bootstrap-original.svg" 
+    width="30" 
+    alt="Bootstrap"/>
   <span>Bootstrap</span>
 </div>
 

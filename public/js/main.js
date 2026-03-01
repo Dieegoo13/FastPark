@@ -19,3 +19,53 @@ menuOptions.forEach((option) => {
     this.classList.add("active");
   });
 });
+
+
+// ========================================MODAL===================================
+
+function formatarDataBR(dataMysql) {
+  if (!dataMysql) return "--";
+
+  const data = new Date(dataMysql.replace(" ", "T"));
+
+  return data.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const modalElement = document.getElementById("modalFechamento");
+
+  const modal = new bootstrap.Modal(modalElement, {
+    backdrop: true, 
+    keyboard: true, 
+  });
+
+  document.querySelectorAll(".btn-fechar").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      document.getElementById("m-ticket").textContent = this.dataset.id;
+
+      document.getElementById("m-entrada").textContent = formatarDataBR(
+        this.dataset.entrada,
+      );
+
+      document.getElementById("m-saida").textContent = formatarDataBR(
+        this.dataset.saida,
+      );
+
+      document.getElementById("m-tempo").textContent = this.dataset.tempo;
+
+      document.getElementById("m-valor").textContent = this.dataset.valor;
+
+      document.getElementById("m-confirmar").href =
+        "/fechamento/fechar/" + this.dataset.id;
+      
+      modal.show();
+    });
+  });
+});
