@@ -5,15 +5,7 @@ class HomeController extends Action
 
     public function index()
     {
-        $tickets = $this->ticketModel->getAll();
-
-        foreach ($tickets as &$ticket) {
-            $ticket['permanencia'] =
-                $this->ticketModel->calcularPermanencia(
-                    $ticket['entrada'],
-                    $ticket['data_saida'] ?? null
-                );
-        }
+        $tickets = $this->ticketModel->getOpenTickets();
 
         $this->view('home', true, [
             'titulo' => 'FastPark - Home',
@@ -21,12 +13,14 @@ class HomeController extends Action
         ]);
     }
 
-    protected function getLayoutDataInfos()
+    public function info()
     {
-        return [
-            'total' => $this->ticketModel->getTotalArrecadado(),
-            'veiculosHoje' => $this->ticketModel->getTotalVeiculosHoje()
-        ];
+        $layoutData = $this->getLayoutDataInfos(); 
+
+        $this->json([
+            'total' => number_format((float)$layoutData['total'] ?? 0, 2, ',', '.'),
+            'veiculosHoje' => $layoutData['veiculosHoje'] ?? 0
+        ]);
     }
 }
 

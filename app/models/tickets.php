@@ -21,10 +21,9 @@ class Tickets
 
     public function getTotalArrecadado()
     {
-        $query = "SELECT SUM(valor) AS total FROM tickets";
+        $query = "SELECT SUM(valor) AS total FROM " . $this->table . " WHERE status = 'fechado'";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $result['total'] ?? 0;
@@ -35,7 +34,7 @@ class Tickets
         $query = "
         SELECT COUNT(*) AS total
         FROM tickets
-        WHERE DATE(saida) = CURDATE()
+        WHERE DATE(entrada) = CURDATE()
         ";
 
         $stmt = $this->conn->query($query);
@@ -64,6 +63,52 @@ class Tickets
         return $minutos;
     }
 
+    public function fecharTicket($id, $valor)
+    {
+        $query = "UPDATE " . $this->table . " SET valor = :valor, data_saida = NOW() WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':valor', $valor);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    // public function criarTicket($placa)
+    // {
+    //     $query = "INSERT INTO " . $this->table . " (placa, entrada) VALUES (:placa, NOW())";
+    //     $stmt = $this->conn->prepare($query);
+    //     $stmt->bindParam(':placa', $placa);
+    //     return $stmt->execute();
+    // }
+
+    public function getOpenTickets()
+    {
+        $query = "SELECT id, entrada, saida FROM " . $this->table . " WHERE status = 'aberto'";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $result = [];
+
+        foreach ($tickets as $ticket) {
+            $entrada = new DateTime($ticket['entrada']);
+            $saida   = $ticket['saida'] ? new DateTime($ticket['saida']) : new DateTime();
+
+            $interval = $saida->getTimestamp() - $entrada->getTimestamp(); // segundos
+            $minutos = ceil($interval / 60); // arredonda para cima
+
+            $valor = ceil($minutos / 10) * 2; // regra: 10 min = 2 reais
+
+            $result[] = [
+                'id' => $ticket['id'],
+                'entrada' => $ticket['entrada'],
+                'saida' => $ticket['saida'],
+                'permanencia' => $minutos,
+                'valor' => $valor,
+            ];
+        }
+
+        return $result;
+    }
 }
 
 

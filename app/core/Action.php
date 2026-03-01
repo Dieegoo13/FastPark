@@ -14,7 +14,10 @@ class Action
 
     protected function getLayoutDataInfos()
     {
-        return [];
+        return [
+            'total' => $this->ticketModel->getTotalArrecadado(),
+            'veiculosHoje' => $this->ticketModel->getTotalVeiculosHoje()
+        ];
     }
 
     protected function view($view, $layout = true, $data = [])
