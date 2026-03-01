@@ -1,0 +1,10 @@
+# Ativa o mod_rewrite
+RewriteEngine On
+
+# Define o diretório base automaticamente
+RewriteBase /quizfut/public/
+
+# Se o arquivo ou diretório não existir, redireciona para index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]

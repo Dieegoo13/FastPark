@@ -1,0 +1,34 @@
+<!-- CONTENT -->
+<div id="content">
+    <div class="section-title">Tickets em Aberto</div>
+
+    <div class="table-card">
+        <table class="table table-borderless mb-0">
+            <thead>
+                <tr>
+                    <th>Nº Ticket</th>
+                    <th>Entrada</th>
+                    <th>Permanência</th>
+                    <th>Valor</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($tickets as $ticket): ?>
+                    <tr>
+                        <td><span class="badge-entrada"><?= $ticket['id'] ?></span></td>
+
+                        <td><span class="badge-time"><?= $ticket['entrada'] ?></span></td>
+
+                        <td><span class="badge-time"><?= $ticket['entrada'] ?></span></td>
+
+                        <td><span class="badge-valor">R$ <?= number_format($ticket['valor'], 2, ',', '.') ?></span></td>
+
+                        <td><button class="btn btn-danger "> Fechar</button></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+</div>

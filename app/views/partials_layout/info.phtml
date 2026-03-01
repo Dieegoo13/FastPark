@@ -1,0 +1,20 @@
+<!-- TOPBAR -->
+<div id="topbar">
+    <div class="stat-pill">
+        <div class="dot" style="background:#22c55e"></div>
+        <span class="label">Total Arrecadado</span>
+        <span class="value green">
+            R$ <?= number_format((float)$total, 2, ',', '.') ?>
+        </span>
+    </div>
+    <div class="stat-pill">
+        <div class="dot"></div>
+        <span class="label">Veículos Atendidos Hoje</span>
+        <span class="value"><?= $veiculosHoje ?></span>
+    </div>
+    <div class="stat-pill">
+        <div class="dot" style="background:#f59e0b"></div>
+        <span class="label">Hora Atual</span>
+        <span class="value" id="clock"></span>
+    </div>
+</div>

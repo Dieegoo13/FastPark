@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $titulo ?? 'FastPark' ?></title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>public/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" /> <!-- ADICIONE ESSA LINHA -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="icon" href="<?= BASE_URL ?>public/img/logo.png">
+</head>
+
+<body>
+
+    <div id="sidebar">
+        <div class="logo-wrap">
+            <div class="logo-icon"><img src="/public/img/logo.png" alt=""></div>
+            <div class="brand">ESTACIONAMENTO<br>FASTPARK</div>
+        </div>
+
+        <span class="nav-label">Menu</span>
+        
+        <?php $urlAtual = $_SERVER['REQUEST_URI'];?>
+
+        <nav>
+            <a href="/" class="menuOption <?= $urlAtual === '/' ? 'active' : '' ?>">
+                <i class="bi bi-ticket-detailed"></i> Tickets
+            </a>
+            <a href="/gerar-ticket" class="menuOption <?= str_starts_with($urlAtual, '/gerarticket') ? 'active' : '' ?>">
+                <i class="bi bi-plus-circle"></i> Gerar Ticket
+            </a>
+            <a href="/fechamento" class="menuOption <?= str_starts_with($urlAtual, '/fechamento') ? 'active' : '' ?>">
+                <i class="bi bi-archive"></i> Tickets Fechados
+            </a>
+            <a href="/relatorios" class="menuOption <?= str_starts_with($urlAtual, '/relatorios') ? 'active' : '' ?>">
+                <i class="bi bi-bar-chart-line"></i> Relatórios
+            </a>
+            <a href="/configuracoes" class="menuOption <?= str_starts_with($urlAtual, '/configuracoes') ? 'active' : '' ?>">
+                <i class="bi bi-gear"></i> Configurações
+            </a>
+        </nav>
+
+        <div class="operator">
+            <span>Operador</span>
+            <strong>Admin</strong>
+        </div>
+    </div>
+
+    <main id="main">
+        <?php require_once APP_PATH . '/views/partials_layout/info.phtml'; ?>
+        <?= $conteudo ?? '' ?>
+    </main>
+
+
+    <footer id="footer">
+        <div>todos os direitos reservados &nbsp;·&nbsp; FASTPARK</div>
+    </footer>
+</body>
+
+<script src="<?= BASE_URL ?>public/js/main.js"></script>
+
+</html>
