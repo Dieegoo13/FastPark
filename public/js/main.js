@@ -23,45 +23,70 @@ menuOptions.forEach((option) => {
 
 // Formata data MySQL para DD/MM/YYYY HH:mm
 function formatarDataBR(dataMysql) {
-    if (!dataMysql) return "--";
-    const data = new Date(dataMysql.replace(" ", "T"));
-    return data.toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-    });
+  if (!dataMysql) return "--";
+  const data = new Date(dataMysql.replace(" ", "T"));
+  return data.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 // Formata valores para R$ 0,00
 function formatarValorBR(valor) {
-    if (valor === null || valor === undefined) return "0,00";
-    return new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-        minimumFractionDigits: 2
-    }).format(valor);
+  if (valor === null || valor === undefined) return "0,00";
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+  }).format(valor);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const modalElement = document.getElementById("modalFechamento");
-    const modal = new bootstrap.Modal(modalElement, { backdrop: true, keyboard: true });
+  const modalElement = document.getElementById("modalFechamento");
+  const modal = new bootstrap.Modal(modalElement, {
+    backdrop: true,
+    keyboard: true,
+  });
 
-    document.querySelectorAll(".btn-fechar").forEach(btn => {
-        btn.addEventListener("click", function () {
-            // Preenche a modal
-            document.getElementById("m-ticket").textContent = this.dataset.id;
-            document.getElementById("m-entrada").textContent = formatarDataBR(this.dataset.entrada);
-            document.getElementById("m-saida").textContent = formatarDataBR(this.dataset.saida);
-            document.getElementById("m-tempo").textContent = this.dataset.tempo;
-            document.getElementById("m-valor").textContent = formatarValorBR(this.dataset.valor);
+  const modalConfirmar = document.getElementById("m-confirmar");
+  const mTicket = document.getElementById("m-ticket");
+  const mEntrada = document.getElementById("m-entrada");
+  const mSaida = document.getElementById("m-saida");
+  const mTempo = document.getElementById("m-tempo");
+  const mValor = document.getElementById("m-valor");
 
-            // Link de confirmar
-            document.getElementById("m-confirmar").href = "/fechamento/fechar/" + this.dataset.id;
+  document.querySelectorAll(".btn-fechar").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const id = this.dataset.id;
+      const entrada = this.dataset.entrada;
+      const saida = new Date(); // momento do fechamento
+      const tempo = this.dataset.tempo || 0;
+      const valor = this.dataset.valor || 0;
 
-            // Abre a modal
-            modal.show();
-        });
+      // Preenche a modal
+      mTicket.textContent = id;
+      mEntrada.textContent = formatarDataBR(entrada);
+      mSaida.textContent = saida.toLocaleString();
+      mTempo.textContent = tempo;
+      mValor.textContent = Number(valor).toFixed(2).replace(".", ",");
+
+      modalConfirmar.href = `/fechamento/fechar/${id}`;
+
+      // Abre a modal
+      modal.show();
     });
+  });
+
+  // Opcional: reseta os dados quando modal é fechada
+  modalElement.addEventListener("hidden.bs.modal", () => {
+    mTicket.textContent = "";
+    mEntrada.textContent = "";
+    mSaida.textContent = "";
+    mTempo.textContent = "";
+    mValor.textContent = "";
+    modalConfirmar.href = "#";
+  });
 });

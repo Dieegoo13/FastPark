@@ -1,11 +1,11 @@
 <?php
 
 class HomeController extends Action
-{   
+{
 
     public function index()
     {
-        $tickets = $this->ticketModel->getOpenTickets();
+        $tickets = $this->ticketModel->getAll('aberto');
 
         $this->view('home', true, [
             'titulo' => 'FastPark - Home',
@@ -13,9 +13,21 @@ class HomeController extends Action
         ]);
     }
 
+    public function fechar($id)
+    {
+        if (!$id) {
+            $this->redirect('/');
+            return;
+        }
+
+        $this->ticketModel->closeTicket($id);
+
+        $this->redirect('/');
+    }
+    
     public function info()
     {
-        $layoutData = $this->getLayoutDataInfos(); 
+        $layoutData = $this->getLayoutDataInfos();
 
         $this->json([
             'total' => number_format((float)$layoutData['total'] ?? 0, 2, ',', '.'),
@@ -23,5 +35,3 @@ class HomeController extends Action
         ]);
     }
 }
-
-

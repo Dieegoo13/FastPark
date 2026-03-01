@@ -6,6 +6,7 @@
         <table class="table table-borderless mb-0">
             <thead>
                 <tr>
+                    <th>Nº Ticket</th>
                     <th>Entrada</th>
                     <th>Permanência</th>
                     <th>Valor</th>
@@ -13,30 +14,33 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><span class="badge-entrada">1624</span></td>
-                    <td><span class="badge-time">16:32</span></td>
-                    <td><span class="badge-time">00:43</span></td>
-                    <td><button class="btn btn-danger ">R$ 8,00 · Fechar</button></td>
-                </tr>
-                <tr>
-                    <td><span class="badge-entrada">1625</span></td>
-                    <td><span class="badge-time">16:32</span></td>
-                    <td><span class="badge-time">00:43</span></td>
-                    <td><button class="btn btn-danger ">R$ 8,00 · Fechar</button></td>
-                </tr>
-                <tr>
-                    <td><span class="badge-entrada">1626</span></td>
-                    <td><span class="badge-time">16:32</span></td>
-                    <td><span class="badge-time">00:43</span></td>
-                    <td><button class="btn btn-danger ">R$ 8,00 · Fechar</button></td>
-                </tr>
-                <tr class="row-open">
-                    <td><span class="badge-entrada">1627</span></td>
-                    <td><span class="badge-time">16:32</span></td>
-                    <td><span class="badge-time">00:43</span></td>
-                    <td><button class="btn btn-primary">Aguardando</button></td>
-                </tr>
+                <?php foreach ($tickets as $ticket): ?>
+                    <tr>
+                        <td><span class="badge-entrada"><?= $ticket['id'] ?></span></td>
+                        <td>
+                            <span class="badge-time">
+                                <?= (new DateTime($ticket['entrada']))->format('d/m/Y H:i') ?>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge-time"><?= $ticket['permanencia'] ?> Minutos</span>
+                        </td>
+                        <td>
+                            <span class="badge-valor">R$ <?= number_format($ticket['valor'], 2, ',', '.') ?></span>
+                        </td>
+                        <td>
+                            <button
+                                class="btn btn-primary "
+                                data-id="<?= $ticket['id'] ?>"
+                                data-entrada="<?= $ticket['entrada'] ?>"
+                                data-saida="<?= $ticket['saida'] ?>"
+                                data-tempo="<?= $ticket['permanencia'] ?>"
+                                data-valor="<?= $ticket['valor'] ?>">
+                                Reabrir Ticket
+                            </button>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>

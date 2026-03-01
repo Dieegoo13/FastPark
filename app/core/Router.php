@@ -23,7 +23,13 @@ class Router
 
              '/fechamento' => [
                 'FechamentoController@index',
-             ],
+            ],
+
+            '/fechamento/fechar/:id' => [
+                'HomeController@fechar',
+            ]
+
+
 
 
         ];
@@ -48,35 +54,42 @@ class Router
      */
     private function dispatch()
     {
-        $path = $this->getUrl();
+        $url = $this->getUrl();
 
-        if ($path == '') {
-            $path = "/";
+        foreach ($this->routes as $route => $controllerAction) {
+            // Converte rota em regex
+            $pattern = preg_replace('#:([a-zA-Z0-9_]+)#', '(?P<$1>[0-9]+)', $route);
+            $pattern = "#^" . $pattern . "$#";
+
+            if (preg_match($pattern, $url, $matches)) {
+                // Extrai parâmetros nomeados
+                $params = [];
+                foreach ($matches as $key => $value) {
+                    if (!is_int($key)) {
+                        $params[$key] = $value;
+                    }
+                }
+
+                $parts = explode('@', $controllerAction[0]);
+                $controller = $parts[0];
+                $action = $parts[1];
+
+                if (!class_exists($controller)) {
+                    die("<h1>Erro: Controller '{$controller}' não encontrado.</h1>");
+                }
+
+                $controllerInstance = new $controller();
+
+                if (!method_exists($controllerInstance, $action)) {
+                    die("<h1>Erro: Método '{$action}' não encontrado em '{$controller}'.</h1>");
+                }
+
+                return call_user_func_array([$controllerInstance, $action], $params);
+            }
         }
 
-        if (!isset($this->routes[$path])) {
-            http_response_code(404);
-            echo "<h1>404 - Página não encontrada</h1>";
-            return;
-        }
-
-        $controllerAction = $this->routes[$path][0];
-
-        $partes = explode('@', $controllerAction);
-        $controller = $partes[0];
-        $action = $partes[1];
-
-        if (!class_exists($controller)) {
-            die("<h1>Erro: Controller '{$controller}' não encontrado.</h1>");
-        }
-
-        $controllerInstance = new $controller();
-
-        if (!method_exists($controllerInstance, $action)) {
-            die("<h1>Erro: Método '{$action}' não encontrado em '{$controller}'.</h1>");
-        }
-
-        return call_user_func([$controllerInstance, $action]);
+        http_response_code(404);
+        echo "<h1>404 - Página não encontrada</h1>";
     }
     
 }

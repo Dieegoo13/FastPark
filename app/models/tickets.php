@@ -11,12 +11,59 @@ class Tickets
         $this->conn = Database::getConnection();
     }
 
-    public function getAll()
+    public function getAll($status = null)
     {
-        $query = "SELECT * FROM " . $this->table . " ORDER BY id ASC";
+        $query = "SELECT * FROM " . $this->table;
+        $params = [];
+
+        // Aplica filtro por status se informado
+        if ($status) {
+            $query .= " WHERE status = :status";
+            $params[':status'] = $status;
+        }
+
         $stmt = $this->conn->prepare($query);
+        $stmt->execute($params);
+
+        $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Calcula permanência e valor
+        foreach ($tickets as &$ticket) {
+            $entrada = new DateTime($ticket['entrada']);
+            $saida   = $ticket['saida'] ? new DateTime($ticket['saida']) : new DateTime();
+
+            $interval = $saida->getTimestamp() - $entrada->getTimestamp();
+            $minutos = ceil($interval / 60);
+
+            $ticket['permanencia'] = $minutos;
+            $ticket['valor'] = ceil($minutos / 10) * 2;
+        }
+
+        return $tickets;
+    }
+
+    public function getById($id)
+    {
+        $query = "SELECT * FROM " . $this->table . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }   
+
+    public function update($id, $data)
+    {
+        $fields = [];
+        $params = [':id' => $id];
+
+        foreach ($data as $key => $value) {
+            $fields[] = "$key = :$key";
+            $params[":$key"] = $value;
+        }
+
+        $query = "UPDATE " . $this->table . " SET " . implode(', ', $fields) . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute($params);
     }
 
     public function getTotalArrecadado()
@@ -63,52 +110,28 @@ class Tickets
         return $minutos;
     }
 
-    public function fecharTicket($id, $valor)
+    public function closeTicket($id)
     {
-        $query = "UPDATE " . $this->table . " SET valor = :valor, data_saida = NOW() WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':valor', $valor);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
-    }
-
-    // public function criarTicket($placa)
-    // {
-    //     $query = "INSERT INTO " . $this->table . " (placa, entrada) VALUES (:placa, NOW())";
-    //     $stmt = $this->conn->prepare($query);
-    //     $stmt->bindParam(':placa', $placa);
-    //     return $stmt->execute();
-    // }
-
-    public function getOpenTickets()
-    {
-        $query = "SELECT id, entrada, saida FROM " . $this->table . " WHERE status = 'aberto'";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $result = [];
-
-        foreach ($tickets as $ticket) {
-            $entrada = new DateTime($ticket['entrada']);
-            $saida   = $ticket['saida'] ? new DateTime($ticket['saida']) : new DateTime();
-
-            $interval = $saida->getTimestamp() - $entrada->getTimestamp(); // segundos
-            $minutos = ceil($interval / 60); // arredonda para cima
-
-            $valor = ceil($minutos / 10) * 2; // regra: 10 min = 2 reais
-
-            $result[] = [
-                'id' => $ticket['id'],
-                'entrada' => $ticket['entrada'],
-                'saida' => $ticket['saida'],
-                'permanencia' => $minutos,
-                'valor' => $valor,
-            ];
+        $ticket = $this->getById($id);
+        if (!$ticket || $ticket['status'] === 'fechado') {
+            return false;
         }
 
-        return $result;
+        $entrada = new DateTime($ticket['entrada']);
+        $saida = new DateTime();
+
+        $interval = $saida->getTimestamp() - $entrada->getTimestamp();
+        $minutos = ceil($interval / 60);
+        $valor = ceil($minutos / 10) * 2;
+
+        return $this->update($id, [
+            'saida' => $saida->format('Y-m-d H:i:s'),
+            'permanencia' => $minutos,
+            'valor' => $valor,
+            'status' => 'fechado'
+        ]);
     }
+
 }
 
 
